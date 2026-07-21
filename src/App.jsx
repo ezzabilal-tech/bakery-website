@@ -14,7 +14,11 @@ import {
   Heart,
   Coffee,
   Award,
-  ShieldCheck
+  ShieldCheck,
+  Tag,
+  MessageSquare,
+  Send,
+  UserCheck
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -81,6 +85,36 @@ const PRODUCTS = [
   }
 ];
 
+const INITIAL_REVIEWS = [
+  {
+    id: 1,
+    name: "Sophia Martinez",
+    role: "Local Food Critic",
+    rating: 5,
+    comment: "The sourdough bread is unlike anything else in the city! Crunchy perfection on the outside, soft cloud inside. 10/10!",
+    date: "2 days ago",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80"
+  },
+  {
+    id: 2,
+    name: "James Wilson",
+    role: "Regular Customer",
+    rating: 5,
+    comment: "My morning ritual includes their Almond Croissant & Cappuccino. Flaky butter goodness that brightens up every day.",
+    date: "1 week ago",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
+  },
+  {
+    id: 3,
+    name: "Emily & David",
+    role: "Wedding Clients",
+    rating: 5,
+    comment: "L'Étoile designed our multi-tier Berry Chocolate wedding cake. Not only was it drop-dead gorgeous, but our guests haven't stopped raving about the taste!",
+    date: "2 weeks ago",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+  }
+];
+
 export default function App() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [cart, setCart] = useState([]);
@@ -88,6 +122,11 @@ export default function App() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   
+  // Reviews state
+  const [reviewsList, setReviewsList] = useState(INITIAL_REVIEWS);
+  const [newReview, setNewReview] = useState({ name: '', rating: 5, comment: '' });
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     phone: '',
@@ -120,6 +159,26 @@ export default function App() {
         return item;
       }).filter(Boolean);
     });
+  };
+
+  const handleAddReview = (e) => {
+    e.preventDefault();
+    if (!newReview.name || !newReview.comment) return;
+    
+    const reviewObj = {
+      id: Date.now(),
+      name: newReview.name,
+      role: 'Verified Foodie',
+      rating: Number(newReview.rating),
+      comment: newReview.comment,
+      date: 'Just now',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'
+    };
+
+    setReviewsList([reviewObj, ...reviewsList]);
+    setNewReview({ name: '', rating: 5, comment: '' });
+    setReviewSubmitted(true);
+    setTimeout(() => setReviewSubmitted(false), 4000);
   };
 
   const totalCartCount = cart.reduce((sum, item) => sum + item.qty, 0);
@@ -297,6 +356,157 @@ export default function App() {
         </div>
       </section>
 
+      {/* SPECIALS SECTION */}
+      <section id="specials" style={{ padding: '6rem 1.5rem', background: '#fffbeb' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <span style={{ background: '#fef3c7', color: '#b45309', padding: '0.35rem 1rem', borderRadius: '999px', fontSize: '0.85rem', fontWeight: '700', border: '1px solid rgba(245,158,11,0.2)' }}>
+              🔥 Limited Time Offers
+            </span>
+            <h2 style={{ fontSize: '2.8rem', marginTop: '0.75rem', marginBottom: '0.5rem' }}>Today's Bakery Specials</h2>
+            <p style={{ color: '#78716c', fontSize: '1.1rem' }}>Handpicked daily offers fresh from our stone deck oven with exclusive discounts.</p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem' }}>
+            {/* Special Card 1 */}
+            <div style={{ background: 'white', borderRadius: '24px', padding: '2rem', boxShadow: 'var(--shadow-md)', border: '1px solid #fef3c7', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+              <span style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', background: '#e11d48', color: 'white', fontWeight: '700', fontSize: '0.8rem', padding: '0.35rem 0.85rem', borderRadius: '999px' }}>
+                SAVE 20%
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
+                <img src="/images/croissant.jpg" alt="Breakfast Combo" style={{ width: '80px', height: '80px', borderRadius: '16px', objectFit: 'cover' }} />
+                <div>
+                  <h3 style={{ fontSize: '1.3rem', color: '#292524' }}>Morning Artisan Combo</h3>
+                  <div style={{ color: '#d97706', fontSize: '0.9rem', fontWeight: '600' }}>Croissant + Cappuccino</div>
+                </div>
+              </div>
+              <p style={{ color: '#78716c', fontSize: '0.95rem', marginBottom: '1.5rem', flex: 1 }}>
+                Start your day with a warm 81-layer butter croissant and a fresh double-shot organic cappuccino.
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px dashed #e7e5e4' }}>
+                <div>
+                  <span style={{ textDecoration: 'line-through', color: '#a8a29e', marginRight: '0.5rem' }}>$9.00</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: '700', color: '#b45309' }}>$7.20</span>
+                </div>
+                <button className="order-now-btn" onClick={() => addToCart(PRODUCTS[1])}>
+                  Claim Deal
+                </button>
+              </div>
+            </div>
+
+            {/* Special Card 2 */}
+            <div style={{ background: 'white', borderRadius: '24px', padding: '2rem', boxShadow: 'var(--shadow-md)', border: '1px solid #fef3c7', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+              <span style={{ position: 'absolute', top: '1.25rem', right: '1.25rem', background: '#d97706', color: 'white', fontWeight: '700', fontSize: '0.8rem', padding: '0.35rem 0.85rem', borderRadius: '999px' }}>
+                FAMILY PACK
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
+                <img src="/images/sourdough.jpg" alt="Weekend Sourdough Bundle" style={{ width: '80px', height: '80px', borderRadius: '16px', objectFit: 'cover' }} />
+                <div>
+                  <h3 style={{ fontSize: '1.3rem', color: '#292524' }}>Weekend Artisan Loaf Duo</h3>
+                  <div style={{ color: '#d97706', fontSize: '0.9rem', fontWeight: '600' }}>2x Sourdough Loaves</div>
+                </div>
+              </div>
+              <p style={{ color: '#78716c', fontSize: '0.95rem', marginBottom: '1.5rem', flex: 1 }}>
+                Two 36-hour slow fermented sourdough loaves baked with organic grains. Perfect for weekend family toasts!
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px dashed #e7e5e4' }}>
+                <div>
+                  <span style={{ textDecoration: 'line-through', color: '#a8a29e', marginRight: '0.5rem' }}>$15.00</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: '700', color: '#b45309' }}>$11.99</span>
+                </div>
+                <button className="order-now-btn" onClick={() => addToCart(PRODUCTS[0])}>
+                  Claim Deal
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* REVIEWS SECTION */}
+      <section id="reviews" className="container" style={{ padding: '6rem 1.5rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+          <span style={{ color: '#d97706', fontWeight: '700', letterSpacing: '1px', textTransform: 'uppercase', fontSize: '0.85rem' }}>Customer Love</span>
+          <h2 style={{ fontSize: '2.8rem', marginTop: '0.5rem', marginBottom: '0.5rem' }}>What People Say About Us</h2>
+          <p style={{ color: '#78716c', fontSize: '1.1rem' }}>Over 1,200+ 5-star reviews from pastry lovers & bread enthusiasts.</p>
+        </div>
+
+        {/* Reviews Cards Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginBottom: '4rem' }}>
+          {reviewsList.map(rev => (
+            <div key={rev.id} style={{ background: 'white', borderRadius: '24px', padding: '2rem', boxShadow: 'var(--shadow-sm)', border: '1px solid #f5f0e6', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', gap: '4px', marginBottom: '1rem' }}>
+                {[...Array(rev.rating)].map((_, i) => (
+                  <Star key={i} size={18} fill="#f59e0b" color="#f59e0b" />
+                ))}
+              </div>
+              <p style={{ color: '#44403c', fontStyle: 'italic', fontSize: '1rem', lineHeight: '1.6', marginBottom: '1.5rem', flex: 1 }}>
+                "{rev.comment}"
+              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: 'auto' }}>
+                <img src={rev.avatar} alt={rev.name} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+                <div>
+                  <strong style={{ display: 'block', color: '#292524', fontSize: '1rem' }}>{rev.name}</strong>
+                  <span style={{ fontSize: '0.8rem', color: '#78716c' }}>{rev.role} • {rev.date}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Write a Review Box */}
+        <div style={{ background: '#fdfaf6', border: '1px solid #f3edd9', borderRadius: '24px', padding: '2.5rem', maxWidth: '700px', margin: '0 auto', boxShadow: 'var(--shadow-md)' }}>
+          <h3 style={{ fontSize: '1.6rem', marginBottom: '0.5rem', textAlign: 'center' }}>Leave Your Review</h3>
+          <p style={{ color: '#78716c', textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.95rem' }}>We value your feedback! Share your experience with L'Étoile Bakery.</p>
+          
+          {reviewSubmitted && (
+            <div style={{ background: '#dcfce7', color: '#15803d', padding: '1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '1.5rem', fontWeight: '600' }}>
+              🎉 Thank you! Your review has been added successfully!
+            </div>
+          )}
+
+          <form onSubmit={handleAddReview} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div>
+              <label style={{ display: 'block', fontWeight: '600', fontSize: '0.85rem', marginBottom: '0.35rem' }}>Your Name</label>
+              <input 
+                type="text" 
+                required 
+                placeholder="e.g. Sarah Jenkins"
+                value={newReview.name}
+                onChange={e => setNewReview({ ...newReview, name: e.target.value })}
+                style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', border: '1px solid #d6d3d1' }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', fontWeight: '600', fontSize: '0.85rem', marginBottom: '0.35rem' }}>Rating</label>
+              <select 
+                value={newReview.rating}
+                onChange={e => setNewReview({ ...newReview, rating: e.target.value })}
+                style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', border: '1px solid #d6d3d1', background: 'white' }}
+              >
+                <option value={5}>⭐⭐⭐⭐⭐ (5/5 Stars - Outstanding)</option>
+                <option value={4}>⭐⭐⭐⭐ (4/5 Stars - Very Good)</option>
+                <option value={3}>⭐⭐⭐ (3/5 Stars - Average)</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', fontWeight: '600', fontSize: '0.85rem', marginBottom: '0.35rem' }}>Your Review</label>
+              <textarea 
+                required
+                rows={3}
+                placeholder="Tell us what you loved about our sourdough, croissants, or cakes..."
+                value={newReview.comment}
+                onChange={e => setNewReview({ ...newReview, comment: e.target.value })}
+                style={{ width: '100%', padding: '0.75rem 1rem', borderRadius: '12px', border: '1px solid #d6d3d1', fontFamily: 'inherit' }}
+              />
+            </div>
+            <button className="order-now-btn" type="submit" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <Send size={18} /> Submit Review
+            </button>
+          </form>
+        </div>
+      </section>
+
       {/* Cart Slide-out Drawer */}
       <div className={`cart-drawer-overlay ${isCartOpen ? 'open' : ''}`} onClick={() => setIsCartOpen(false)}>
         <div className="cart-drawer" onClick={(e) => e.stopPropagation()}>
@@ -442,6 +652,7 @@ export default function App() {
               <li><a href="#menu">Our Menu</a></li>
               <li><a href="#about">About Us</a></li>
               <li><a href="#specials">Daily Specials</a></li>
+              <li><a href="#reviews">Reviews</a></li>
               <li><a href="#contact">Contact</a></li>
             </ul>
           </div>
