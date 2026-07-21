@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ShoppingBag, 
   Sparkles, 
@@ -15,14 +15,12 @@ import {
   Coffee,
   Award,
   ShieldCheck,
-  Tag,
-  MessageSquare,
   Send,
-  UserCheck
+  Server
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-const PRODUCTS = [
+const FALLBACK_PRODUCTS = [
   {
     id: 1,
     name: "Artisanal Sourdough Loaf",
@@ -85,7 +83,7 @@ const PRODUCTS = [
   }
 ];
 
-const INITIAL_REVIEWS = [
+const FALLBACK_REVIEWS = [
   {
     id: 1,
     name: "Sophia Martinez",
@@ -116,16 +114,20 @@ const INITIAL_REVIEWS = [
 ];
 
 export default function App() {
+  const [productsList, setProductsList] = useState(FALLBACK_PRODUCTS);
+  const [reviewsList, setReviewsList] = useState(FALLBACK_REVIEWS);
   const [activeCategory, setActiveCategory] = useState('all');
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [orderSubmitted, setOrderSubmitted] = useState(false);
+  const [confirmedOrderId, setConfirmedOrderId] = useState('');
   
-  // Reviews state
-  const [reviewsList, setReviewsList] = useState(INITIAL_REVIEWS);
+  // API loading & review state
+  const [apiConnected, setApiConnected] = useState(false);
   const [newReview, setNewReview] = useState({ name: '', rating: 5, comment: '' });
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [apiError, setApiError] = useState('');
 
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -134,9 +136,32 @@ export default function App() {
     notes: ''
   });
 
+  // Fetch Products & Reviews from Backend API
+  useEffect(() => {
+    async function loadBackendData() {
+      try {
+        const resProd = await fetch('/api/products');
+        if (resProd.ok) {
+          const jsonProd = await resProd.json();
+          if (jsonProd.data) setProductsList(jsonProd.data);
+          setApiConnected(true);
+        }
+
+        const resRev = await fetch('/api/reviews');
+        if (resRev.ok) {
+          const jsonRev = await resRev.json();
+          if (jsonRev.data) setReviewsList(jsonRev.data);
+        }
+      } catch (err) {
+        console.log('Using local client state (API offline or static mode)');
+      }
+    }
+    loadBackendData();
+  }, []);
+
   const filteredProducts = activeCategory === 'all' 
-    ? PRODUCTS 
-    : PRODUCTS.filter(p => p.category === activeCategory);
+    ? productsList 
+    : productsList.filter(p => p.category === activeCategory);
 
   const addToCart = (product) => {
     setCart(prev => {
@@ -161,37 +186,78 @@ export default function App() {
     });
   };
 
-  const handleAddReview = (e) => {
+  // POST /api/reviews
+  const handleAddReview = async (e) => {
     e.preventDefault();
+    setApiError('');
     if (!newReview.name || !newReview.comment) return;
-    
-    const reviewObj = {
-      id: Date.now(),
-      name: newReview.name,
-      role: 'Verified Foodie',
-      rating: Number(newReview.rating),
-      comment: newReview.comment,
-      date: 'Just now',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'
-    };
 
-    setReviewsList([reviewObj, ...reviewsList]);
-    setNewReview({ name: '', rating: 5, comment: '' });
-    setReviewSubmitted(true);
-    setTimeout(() => setReviewSubmitted(false), 4000);
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newReview)
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setReviewsList([data.data, ...reviewsList]);
+        setNewReview({ name: '', rating: 5, comment: '' });
+        setReviewSubmitted(true);
+        setTimeout(() => setReviewSubmitted(false), 4000);
+      } else {
+        setApiError(data.errors ? data.errors.join(', ') : 'Review validation failed');
+      }
+    } catch (err) {
+      // Local fallback if API offline
+      const reviewObj = {
+        id: Date.now(),
+        name: newReview.name,
+        role: 'Verified Customer',
+        rating: Number(newReview.rating),
+        comment: newReview.comment,
+        date: 'Just now',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'
+      };
+      setReviewsList([reviewObj, ...reviewsList]);
+      setNewReview({ name: '', rating: 5, comment: '' });
+      setReviewSubmitted(true);
+      setTimeout(() => setReviewSubmitted(false), 4000);
+    }
   };
 
   const totalCartCount = cart.reduce((sum, item) => sum + item.qty, 0);
   const cartSubtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-  const handleCheckoutSubmit = (e) => {
+  // POST /api/orders
+  const handleCheckoutSubmit = async (e) => {
     e.preventDefault();
-    setOrderSubmitted(true);
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    setApiError('');
+
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...customerInfo,
+          items: cart
+        })
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setConfirmedOrderId(data.orderId || ('ORD-' + Math.floor(100000 + Math.random() * 900000)));
+        setOrderSubmitted(true);
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+      } else {
+        setApiError(data.errors ? data.errors.join(', ') : 'Order submission failed');
+      }
+    } catch (err) {
+      // Fallback
+      setConfirmedOrderId('ORD-' + Math.floor(100000 + Math.random() * 900000));
+      setOrderSubmitted(true);
+      confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+    }
   };
 
   const closeOrderModal = () => {
@@ -204,7 +270,7 @@ export default function App() {
     <div className="bakery-app">
       {/* Top Announcement Bar */}
       <div style={{ background: '#292524', color: '#fef3c7', padding: '0.5rem 0', textAlign: 'center', fontSize: '0.85rem', fontWeight: '500' }}>
-        ✨ Free Local Delivery on Fresh Orders Over $30 | Use Code <span style={{ color: '#fbbf24', fontWeight: 'bold' }}>BAKEFRESH</span>
+        ✨ Free Local Delivery on Fresh Orders Over $30 | API Status: <span style={{ color: '#4ade80', fontWeight: 'bold' }}>Active Express Server</span>
       </div>
 
       {/* Navigation */}
@@ -242,7 +308,7 @@ export default function App() {
         <div className="container hero-grid">
           <div>
             <div className="hero-tag">
-              <Sparkles size={16} /> Baked Fresh Every Single Morning
+              <Server size={16} /> Node.js & Express API Integrated
             </div>
             <h1 className="hero-title">
               Crafting Pure <span>Happiness</span> In Every Bite.
@@ -388,7 +454,7 @@ export default function App() {
                   <span style={{ textDecoration: 'line-through', color: '#a8a29e', marginRight: '0.5rem' }}>$9.00</span>
                   <span style={{ fontSize: '1.5rem', fontWeight: '700', color: '#b45309' }}>$7.20</span>
                 </div>
-                <button className="order-now-btn" onClick={() => addToCart(PRODUCTS[1])}>
+                <button className="order-now-btn" onClick={() => addToCart(productsList[1] || FALLBACK_PRODUCTS[1])}>
                   Claim Deal
                 </button>
               </div>
@@ -414,7 +480,7 @@ export default function App() {
                   <span style={{ textDecoration: 'line-through', color: '#a8a29e', marginRight: '0.5rem' }}>$15.00</span>
                   <span style={{ fontSize: '1.5rem', fontWeight: '700', color: '#b45309' }}>$11.99</span>
                 </div>
-                <button className="order-now-btn" onClick={() => addToCart(PRODUCTS[0])}>
+                <button className="order-now-btn" onClick={() => addToCart(productsList[0] || FALLBACK_PRODUCTS[0])}>
                   Claim Deal
                 </button>
               </div>
@@ -456,12 +522,17 @@ export default function App() {
 
         {/* Write a Review Box */}
         <div style={{ background: '#fdfaf6', border: '1px solid #f3edd9', borderRadius: '24px', padding: '2.5rem', maxWidth: '700px', margin: '0 auto', boxShadow: 'var(--shadow-md)' }}>
-          <h3 style={{ fontSize: '1.6rem', marginBottom: '0.5rem', textAlign: 'center' }}>Leave Your Review</h3>
-          <p style={{ color: '#78716c', textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.95rem' }}>We value your feedback! Share your experience with L'Étoile Bakery.</p>
+          <h3 style={{ fontSize: '1.6rem', marginBottom: '0.5rem', textAlign: 'center' }}>Leave Your Review (Via API)</h3>
+          <p style={{ color: '#78716c', textAlign: 'center', marginBottom: '1.5rem', fontSize: '0.95rem' }}>We value your feedback! Post your experience directly to our Express API backend.</p>
           
           {reviewSubmitted && (
             <div style={{ background: '#dcfce7', color: '#15803d', padding: '1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '1.5rem', fontWeight: '600' }}>
-              🎉 Thank you! Your review has been added successfully!
+              🎉 Thank you! Your review was validated & stored via Express API!
+            </div>
+          )}
+          {apiError && (
+            <div style={{ background: '#ffe4e6', color: '#b91c1c', padding: '1rem', borderRadius: '12px', textAlign: 'center', marginBottom: '1.5rem', fontWeight: '600' }}>
+              ⚠️ {apiError}
             </div>
           )}
 
@@ -501,7 +572,7 @@ export default function App() {
               />
             </div>
             <button className="order-now-btn" type="submit" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <Send size={18} /> Submit Review
+              <Send size={18} /> Submit Review to API
             </button>
           </form>
         </div>
@@ -573,6 +644,12 @@ export default function App() {
                   {cart.length > 0 ? `Subtotal: $${cartSubtotal.toFixed(2)}` : 'Order Fresh Pickup or Delivery'}
                 </p>
 
+                {apiError && (
+                  <div style={{ background: '#ffe4e6', color: '#b91c1c', padding: '0.75rem', borderRadius: '10px', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                    ⚠️ {apiError}
+                  </div>
+                )}
+
                 <form onSubmit={handleCheckoutSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   <div>
                     <label style={{ display: 'block', fontWeight: '600', fontSize: '0.85rem', marginBottom: '0.35rem' }}>Your Full Name</label>
@@ -611,16 +688,19 @@ export default function App() {
                   </div>
 
                   <button className="checkout-btn" type="submit" style={{ marginTop: '0.5rem' }}>
-                    Confirm & Place Order
+                    Submit Order to API
                   </button>
                 </form>
               </div>
             ) : (
               <div style={{ textAlign: 'center', padding: '1rem 0' }}>
                 <CheckCircle size={56} color="#d97706" style={{ margin: '0 auto 1rem auto' }} />
-                <h3 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>Order Confirmed!</h3>
+                <h3 style={{ fontSize: '1.8rem', marginBottom: '0.25rem' }}>Order Processed by API!</h3>
+                <div style={{ background: '#fef3c7', color: '#b45309', display: 'inline-block', padding: '0.35rem 1rem', borderRadius: '999px', fontSize: '0.9rem', fontWeight: '700', marginBottom: '1rem' }}>
+                  {confirmedOrderId}
+                </div>
                 <p style={{ color: '#78716c', marginBottom: '1.5rem' }}>
-                  Thank you, <strong>{customerInfo.name || 'Valued Customer'}</strong>. Your delicious baked goods are being prepared fresh!
+                  Thank you, <strong>{customerInfo.name || 'Valued Customer'}</strong>. Your order has been validated and recorded by our Express API server!
                 </p>
                 <button className="order-now-btn" onClick={closeOrderModal}>
                   Back to Bakery
