@@ -22,6 +22,8 @@ import {
   Sliders
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import Floating, { FloatingElement } from "@/components/ui/parallax-floating"
+
 
 const FALLBACK_PRODUCTS = [
   {
@@ -385,9 +387,116 @@ export default function App() {
               </button>
             </div>
           </div>
-          <div className="hero-image-wrapper">
-            <img src="/images/hero.jpg" alt="Artisan Bakery Counter" className="hero-img" />
-            <div className="hero-badge-float">
+          <div className="hero-image-wrapper" style={{ position: 'relative', overflow: 'hidden', height: '520px', backgroundColor: 'rgba(253,250,246,0.6)', border: '1px solid rgba(217,119,6,0.1)', borderRadius: '32px' }}>
+            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(245,158,11,0.06) 0%, rgba(0,0,0,0) 70%)', pointerEvents: 'none' }} />
+            
+            <Floating sensitivity={-0.6} className="overflow-hidden">
+              <FloatingElement depth={0.5} className="top-[8%] left-[8%]">
+                <div className="group relative pointer-events-auto">
+                  <img
+                    src="/images/croissant.jpg"
+                    alt="Croissant"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
+                  />
+                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                    Croissant
+                  </span>
+                </div>
+              </FloatingElement>
+
+              <FloatingElement depth={1.2} className="top-[12%] left-[36%]">
+                <div className="group relative pointer-events-auto">
+                  <img
+                    src="/images/strawberry_tart.jpg"
+                    alt="Strawberry Tart"
+                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
+                  />
+                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                    Strawberry Tart
+                  </span>
+                </div>
+              </FloatingElement>
+
+              <FloatingElement depth={2} className="top-[4%] left-[60%]">
+                <div className="group relative pointer-events-auto">
+                  <img
+                    src="/images/sourdough.jpg"
+                    alt="Sourdough"
+                    className="w-20 h-28 sm:w-24 sm:h-34 rounded-3xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
+                  />
+                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                    Sourdough
+                  </span>
+                </div>
+              </FloatingElement>
+
+              <FloatingElement depth={0.8} className="top-[2%] left-[82%]">
+                <div className="group relative pointer-events-auto">
+                  <img
+                    src="/images/chocolate_cake.jpg"
+                    alt="Chocolate Cake"
+                    className="w-18 h-18 sm:w-22 sm:h-22 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
+                  />
+                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                    Chocolate Cake
+                  </span>
+                </div>
+              </FloatingElement>
+
+              <FloatingElement depth={1} className="top-[45%] left-[4%]">
+                <div className="group relative pointer-events-auto">
+                  <img
+                    src="/images/croissant.jpg"
+                    alt="Pain au Chocolat"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
+                  />
+                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                    Pain au Chocolat
+                  </span>
+                </div>
+              </FloatingElement>
+
+              <FloatingElement depth={1.8} className="top-[68%] left-[75%]">
+                <div className="group relative pointer-events-auto">
+                  <img
+                    src="/images/chocolate_cake.jpg"
+                    alt="Truffle Cake"
+                    className="w-22 h-22 sm:w-26 sm:h-26 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
+                  />
+                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                    Truffle Cake
+                  </span>
+                </div>
+              </FloatingElement>
+
+              <FloatingElement depth={3} className="top-[73%] left-[12%]">
+                <div className="group relative pointer-events-auto">
+                  <img
+                    src="/images/sourdough.jpg"
+                    alt="Organic Flour"
+                    className="w-28 h-20 sm:w-34 sm:h-24 rounded-3xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
+                  />
+                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                    Organic Flour
+                  </span>
+                </div>
+              </FloatingElement>
+
+              <FloatingElement depth={1} className="top-[78%] left-[45%]">
+                <div className="group relative pointer-events-auto">
+                  <img
+                    src="/images/strawberry_tart.jpg"
+                    alt="Fresh Fruit Tart"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
+                  />
+                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                    Fresh Fruit Tart
+                  </span>
+                </div>
+              </FloatingElement>
+            </Floating>
+
+            <div className="hero-badge-float" style={{ zIndex: 20 }}>
               <div className="float-icon">
                 <Award size={24} />
               </div>
