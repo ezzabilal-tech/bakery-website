@@ -364,147 +364,165 @@ export default function App() {
       </nav>
 
       {/* Hero Section */}
-      <section className="hero-section">
-        <div className="container hero-grid">
-          <div>
-            <div className="hero-tag">
-              <Database size={16} /> Persistent DB & CRUD Enabled
+      <section className="hero-section" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', minHeight: '650px', background: 'radial-gradient(circle at center, rgba(245,158,11,0.05) 0%, rgba(0,0,0,0) 75%), #FAF6EE', borderBottom: '1px solid rgba(217,119,6,0.08)' }}>
+        
+        {/* Full-width Parallax Background */}
+        <Floating sensitivity={-0.8} className="absolute inset-0 w-full h-full pointer-events-none">
+          {/* LEFT SIDE FLOATING PASTRIES */}
+          
+          {/* Item 1: Croissant */}
+          <FloatingElement depth={0.6} className="top-[12%] left-[6%]">
+            <div className="group relative pointer-events-auto">
+              <img
+                src="/images/croissant.jpg"
+                alt="Croissant"
+                className="w-18 h-18 sm:w-22 sm:h-22 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-110 duration-300 transition-transform cursor-pointer"
+              />
+              <span className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 text-[10px] text-amber-900 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                Croissant
+              </span>
             </div>
-            <h1 className="hero-title">
-              Crafting Pure <span>Happiness</span> In Every Bite.
-            </h1>
-            <p className="hero-desc">
-              From our 36-hour slow-fermented sourdough to delicate hand-laminated French croissants, experience artisanal bakery perfection backed by persistent DB storage.
-            </p>
-            <div className="hero-cta-group">
-              <button className="order-now-btn" onClick={() => {
-                document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' });
-              }}>
-                Explore Menu <ArrowRight size={18} style={{ marginLeft: '6px', verticalAlign: 'middle' }} />
-              </button>
-              <button className="secondary-btn" onClick={() => setIsAdminOpen(true)}>
-                <Database size={16} /> DB Manager
-              </button>
+          </FloatingElement>
+
+          {/* Item 2: Strawberry Tart */}
+          <FloatingElement depth={1.3} className="top-[32%] left-[18%]">
+            <div className="group relative pointer-events-auto">
+              <img
+                src="/images/strawberry_tart.jpg"
+                alt="Strawberry Tart"
+                className="w-16 h-16 sm:w-18 sm:h-18 rounded-full object-cover border border-amber-800/10 shadow-lg hover:scale-110 duration-300 transition-transform cursor-pointer"
+              />
+              <span className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 text-[10px] text-amber-900 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                Strawberry Tart
+              </span>
             </div>
+          </FloatingElement>
+
+          {/* Item 3: Sourdough */}
+          <FloatingElement depth={2} className="top-[55%] left-[4%]">
+            <div className="group relative pointer-events-auto">
+              <img
+                src="/images/sourdough.jpg"
+                alt="Sourdough"
+                className="w-22 h-30 sm:w-26 sm:h-36 rounded-3xl object-cover border border-amber-800/10 shadow-lg hover:scale-110 duration-300 transition-transform cursor-pointer"
+              />
+              <span className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 text-[10px] text-amber-900 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                Sourdough Bread
+              </span>
+            </div>
+          </FloatingElement>
+
+          {/* Item 4: Flour (Organic) */}
+          <FloatingElement depth={2.8} className="top-[74%] left-[16%]">
+            <div className="group relative pointer-events-auto">
+              <img
+                src="/images/sourdough.jpg"
+                alt="Organic Flour"
+                className="w-28 h-20 sm:w-34 sm:h-24 rounded-3xl object-cover border border-amber-800/10 shadow-lg hover:scale-110 duration-300 transition-transform cursor-pointer"
+              />
+              <span className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 text-[10px] text-amber-900 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                Organic Flour
+              </span>
+            </div>
+          </FloatingElement>
+
+          {/* RIGHT SIDE FLOATING PASTRIES */}
+          
+          {/* Item 5: Chocolate Cake */}
+          <FloatingElement depth={0.8} className="top-[10%] right-[6%]">
+            <div className="group relative pointer-events-auto">
+              <img
+                src="/images/chocolate_cake.jpg"
+                alt="Chocolate Cake"
+                className="w-18 h-18 sm:w-22 sm:h-22 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-110 duration-300 transition-transform cursor-pointer"
+              />
+              <span className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 text-[10px] text-amber-900 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                Chocolate Cake
+              </span>
+            </div>
+          </FloatingElement>
+
+          {/* Item 6: Pain au Chocolat */}
+          <FloatingElement depth={1.2} className="top-[32%] right-[18%]">
+            <div className="group relative pointer-events-auto">
+              <img
+                src="/images/croissant.jpg"
+                alt="Pain au Chocolat"
+                className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-110 duration-300 transition-transform cursor-pointer"
+              />
+              <span className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 text-[10px] text-amber-900 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                Pain au Chocolat
+              </span>
+            </div>
+          </FloatingElement>
+
+          {/* Item 7: Truffle Cake */}
+          <FloatingElement depth={1.8} className="top-[55%] right-[5%]">
+            <div className="group relative pointer-events-auto">
+              <img
+                src="/images/chocolate_cake.jpg"
+                alt="Truffle Cake"
+                className="w-22 h-22 sm:w-26 sm:h-26 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-110 duration-300 transition-transform cursor-pointer"
+              />
+              <span className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 text-[10px] text-amber-900 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                Truffle Cake
+              </span>
+            </div>
+          </FloatingElement>
+
+          {/* Item 8: Fresh Fruit Tart */}
+          <FloatingElement depth={1.4} className="top-[74%] right-[16%]">
+            <div className="group relative pointer-events-auto">
+              <img
+                src="/images/strawberry_tart.jpg"
+                alt="Fruit Tart"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border border-amber-800/10 shadow-lg hover:scale-110 duration-300 transition-transform cursor-pointer"
+              />
+              <span className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 text-[10px] text-amber-900 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
+                Fruit Tart
+              </span>
+            </div>
+          </FloatingElement>
+        </Floating>
+
+        {/* Center Content Box */}
+        <div className="container relative z-10 flex flex-col items-center justify-center text-center px-6 max-w-3xl" style={{ pointerEvents: 'auto' }}>
+          <div className="hero-tag" style={{ margin: '0 auto 1.5rem auto' }}>
+            <Database size={16} /> Persistent DB & CRUD Enabled
           </div>
-          <div className="hero-image-wrapper" style={{ position: 'relative', overflow: 'hidden', height: '520px', backgroundColor: 'rgba(253,250,246,0.6)', border: '1px solid rgba(217,119,6,0.1)', borderRadius: '32px' }}>
-            <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, rgba(245,158,11,0.06) 0%, rgba(0,0,0,0) 70%)', pointerEvents: 'none' }} />
-            
-            <Floating sensitivity={-0.6} className="overflow-hidden">
-              <FloatingElement depth={0.5} className="top-[8%] left-[8%]">
-                <div className="group relative pointer-events-auto">
-                  <img
-                    src="/images/croissant.jpg"
-                    alt="Croissant"
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
-                  />
-                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
-                    Croissant
-                  </span>
-                </div>
-              </FloatingElement>
+          
+          <h1 className="hero-title" style={{ fontSize: '4.8rem', lineHeight: '1.05', marginBottom: '1.25rem', fontWeight: '800', color: '#292524', letterSpacing: '-1.5px' }}>
+            L'Étoile <span style={{ color: '#d97706', fontStyle: 'italic', fontWeight: '500' }}>Bakery</span>
+          </h1>
+          
+          <h2 style={{ fontSize: '2rem', fontFamily: 'var(--font-serif)', color: '#292524', marginBottom: '1.5rem', fontWeight: '600', letterSpacing: '-0.5px' }}>
+            Crafting Pure <span style={{ color: '#d97706', fontStyle: 'italic' }}>Happiness</span> In Every Bite.
+          </h2>
+          
+          <p className="hero-desc" style={{ margin: '0 auto 2.5rem auto', fontSize: '1.15rem', color: '#78716c', lineHeight: '1.6', maxW: '580px' }}>
+            From our 36-hour slow-fermented sourdough to delicate hand-laminated French croissants, experience artisanal bakery perfection backed by persistent DB storage.
+          </p>
+          
+          <div className="hero-cta-group" style={{ justifyContent: 'center' }}>
+            <button className="order-now-btn" onClick={() => {
+              document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' });
+            }}>
+              Explore Menu <ArrowRight size={18} style={{ marginLeft: '6px', verticalAlign: 'middle' }} />
+            </button>
+            <button className="secondary-btn" onClick={() => setIsAdminOpen(true)}>
+              <Database size={16} /> DB Manager
+            </button>
+          </div>
+        </div>
 
-              <FloatingElement depth={1.2} className="top-[12%] left-[36%]">
-                <div className="group relative pointer-events-auto">
-                  <img
-                    src="/images/strawberry_tart.jpg"
-                    alt="Strawberry Tart"
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
-                  />
-                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
-                    Strawberry Tart
-                  </span>
-                </div>
-              </FloatingElement>
-
-              <FloatingElement depth={2} className="top-[4%] left-[60%]">
-                <div className="group relative pointer-events-auto">
-                  <img
-                    src="/images/sourdough.jpg"
-                    alt="Sourdough"
-                    className="w-20 h-28 sm:w-24 sm:h-34 rounded-3xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
-                  />
-                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
-                    Sourdough
-                  </span>
-                </div>
-              </FloatingElement>
-
-              <FloatingElement depth={0.8} className="top-[2%] left-[82%]">
-                <div className="group relative pointer-events-auto">
-                  <img
-                    src="/images/chocolate_cake.jpg"
-                    alt="Chocolate Cake"
-                    className="w-18 h-18 sm:w-22 sm:h-22 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
-                  />
-                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
-                    Chocolate Cake
-                  </span>
-                </div>
-              </FloatingElement>
-
-              <FloatingElement depth={1} className="top-[45%] left-[4%]">
-                <div className="group relative pointer-events-auto">
-                  <img
-                    src="/images/croissant.jpg"
-                    alt="Pain au Chocolat"
-                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
-                  />
-                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
-                    Pain au Chocolat
-                  </span>
-                </div>
-              </FloatingElement>
-
-              <FloatingElement depth={1.8} className="top-[68%] left-[75%]">
-                <div className="group relative pointer-events-auto">
-                  <img
-                    src="/images/chocolate_cake.jpg"
-                    alt="Truffle Cake"
-                    className="w-22 h-22 sm:w-26 sm:h-26 rounded-2xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
-                  />
-                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
-                    Truffle Cake
-                  </span>
-                </div>
-              </FloatingElement>
-
-              <FloatingElement depth={3} className="top-[73%] left-[12%]">
-                <div className="group relative pointer-events-auto">
-                  <img
-                    src="/images/sourdough.jpg"
-                    alt="Organic Flour"
-                    className="w-28 h-20 sm:w-34 sm:h-24 rounded-3xl object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
-                  />
-                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
-                    Organic Flour
-                  </span>
-                </div>
-              </FloatingElement>
-
-              <FloatingElement depth={1} className="top-[78%] left-[45%]">
-                <div className="group relative pointer-events-auto">
-                  <img
-                    src="/images/strawberry_tart.jpg"
-                    alt="Fresh Fruit Tart"
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border border-amber-800/10 shadow-lg hover:scale-105 duration-200 transition-transform cursor-pointer"
-                  />
-                  <span className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-[9px] text-amber-900/60 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none font-bold">
-                    Fresh Fruit Tart
-                  </span>
-                </div>
-              </FloatingElement>
-            </Floating>
-
-            <div className="hero-badge-float" style={{ zIndex: 20 }}>
-              <div className="float-icon">
-                <Award size={24} />
-              </div>
-              <div>
-                <strong style={{ display: 'block', fontSize: '1rem', color: '#292524' }}>Best Bakery 2026</strong>
-                <span style={{ fontSize: '0.85rem', color: '#78716c' }}>Golden Spoon Award Winner</span>
-              </div>
-            </div>
+        {/* Small badge float centered bottom */}
+        <div className="hero-badge-float" style={{ position: 'absolute', bottom: '1.5rem', left: '50%', transform: 'translateX(-50%)', zIndex: 20 }}>
+          <div className="float-icon">
+            <Award size={24} />
+          </div>
+          <div>
+            <strong style={{ display: 'block', fontSize: '0.9rem', color: '#292524' }}>Best Bakery 2026</strong>
+            <span style={{ fontSize: '0.8rem', color: '#78716c' }}>Golden Spoon Award Winner</span>
           </div>
         </div>
       </section>
