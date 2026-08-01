@@ -711,3 +711,15 @@ h1, h2, h3, .font-serif {
     grid-template-columns: 1fr;
   }
 }
+
+/* Achievements Toast Slide-In Animation */
+@keyframes slideInUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

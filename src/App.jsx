@@ -19,7 +19,8 @@ import {
   Database,
   Trash2,
   RefreshCw,
-  Sliders
+  Sliders,
+  Trophy
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import Floating, { FloatingElement } from "@/components/ui/parallax-floating"
@@ -118,6 +119,65 @@ const FALLBACK_REVIEWS = [
   }
 ];
 
+const BAKERY_ACHIEVEMENTS = [
+  {
+    id: 'first-bite',
+    title: 'First Bite 🥐',
+    description: 'Add your first item to the basket.',
+    badgeColor: 'from-amber-400 to-amber-600',
+    icon: '🥐'
+  },
+  {
+    id: 'croissant-connoisseur',
+    title: 'Croissant Connoisseur 🧈',
+    description: 'Add a Golden Butter Croissant or Almond Pain Au Chocolat.',
+    badgeColor: 'from-yellow-400 to-yellow-600',
+    icon: '🧈'
+  },
+  {
+    id: 'caffeine-fueled',
+    title: 'Caffeine Fueled ☕',
+    description: 'Add an Artisan Cappuccino to power your morning.',
+    badgeColor: 'from-orange-400 to-orange-600',
+    icon: '☕'
+  },
+  {
+    id: 'sweet-tooth',
+    title: 'Sweet Tooth 🍰',
+    description: 'Add a Berry Chocolate Truffle Cake or French Strawberry Tart.',
+    badgeColor: 'from-pink-400 to-pink-600',
+    icon: '🍰'
+  },
+  {
+    id: 'bakery-auditor',
+    title: 'Bakery Auditor 🗄️',
+    description: 'Inspect the backend database by opening the Admin Panel.',
+    badgeColor: 'from-blue-400 to-blue-600',
+    icon: '🗄️'
+  },
+  {
+    id: 'critique-extraordinaire',
+    title: 'Critique Extraordinaire ✍️',
+    description: 'Submit your culinary review of our artisanal products.',
+    badgeColor: 'from-emerald-400 to-emerald-600',
+    icon: '✍️'
+  },
+  {
+    id: 'generous-tipper',
+    title: 'Generous Tipper 📝',
+    description: 'Leave special instructions or custom requests in the order notes.',
+    badgeColor: 'from-indigo-400 to-indigo-600',
+    icon: '📝'
+  },
+  {
+    id: 'master-baker',
+    title: 'Star Baker 🌟',
+    description: 'Unlock all 7 other achievements on our website.',
+    badgeColor: 'from-purple-400 to-pink-600',
+    icon: '🌟'
+  }
+];
+
 export default function App() {
   const [productsList, setProductsList] = useState(FALLBACK_PRODUCTS);
   const [reviewsList, setReviewsList] = useState(FALLBACK_REVIEWS);
@@ -136,6 +196,52 @@ export default function App() {
   const [newReview, setNewReview] = useState({ name: '', rating: 5, comment: '' });
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [apiError, setApiError] = useState('');
+
+  // Achievements State
+  const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
+  const [unlockedAchievements, setUnlockedAchievements] = useState(() => {
+    try {
+      const saved = localStorage.getItem('bakery_achievements');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [lastUnlocked, setLastUnlocked] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+
+  const unlockAchievement = (id) => {
+    setUnlockedAchievements(prev => {
+      if (prev.includes(id)) return prev;
+      const next = [...prev, id];
+      localStorage.setItem('bakery_achievements', JSON.stringify(next));
+      
+      const ach = BAKERY_ACHIEVEMENTS.find(a => a.id === id);
+      if (ach) {
+        setLastUnlocked(ach);
+        setShowToast(true);
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.8 }
+        });
+        setTimeout(() => setShowToast(false), 5000);
+      }
+      return next;
+    });
+  };
+
+  // Monitor for Star Baker (unlock all other 7 achievements)
+  useEffect(() => {
+    const regularAchievements = BAKERY_ACHIEVEMENTS.filter(a => a.id !== 'master-baker').map(a => a.id);
+    const allRegularUnlocked = regularAchievements.every(id => unlockedAchievements.includes(id));
+    if (allRegularUnlocked && unlockedAchievements.length > 0 && !unlockedAchievements.includes('master-baker')) {
+      // Small delay to let the previous achievement toast finish
+      setTimeout(() => {
+        unlockAchievement('master-baker');
+      }, 1500);
+    }
+  }, [unlockedAchievements]);
 
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -193,6 +299,26 @@ export default function App() {
       return [...prev, { ...product, qty: 1 }];
     });
     setIsCartOpen(true);
+
+    // Achievements triggers
+    unlockAchievement('first-bite');
+    
+    const prodName = product.name.toLowerCase();
+    const prodCat = (product.category || '').toLowerCase();
+    
+    if (prodName.includes('croissant') || prodName.includes('pain au chocolat') || prodCat === 'pastries') {
+      if (prodName.includes('croissant') || prodName.includes('pain au chocolat')) {
+        unlockAchievement('croissant-connoisseur');
+      }
+    }
+    
+    if (prodName.includes('cappuccino') || prodCat === 'coffee') {
+      unlockAchievement('caffeine-fueled');
+    }
+    
+    if (prodName.includes('cake') || prodName.includes('tart') || prodCat === 'cakes') {
+      unlockAchievement('sweet-tooth');
+    }
   };
 
   const updateQty = (id, delta) => {
@@ -227,6 +353,7 @@ export default function App() {
         setReviewSubmitted(true);
         setTimeout(() => setReviewSubmitted(false), 4000);
         fetchAllData();
+        unlockAchievement('critique-extraordinaire');
       } else {
         setApiError(data.errors ? data.errors.join(', ') : 'Review validation failed');
       }
@@ -244,6 +371,7 @@ export default function App() {
       setNewReview({ name: '', rating: 5, comment: '' });
       setReviewSubmitted(true);
       setTimeout(() => setReviewSubmitted(false), 4000);
+      unlockAchievement('critique-extraordinaire');
     }
   };
 
@@ -279,6 +407,9 @@ export default function App() {
         setOrderSubmitted(true);
         confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
         fetchAllData();
+        if (customerInfo.notes && customerInfo.notes.trim() !== '') {
+          unlockAchievement('generous-tipper');
+        }
       } else {
         setApiError(data.errors ? data.errors.join(', ') : 'Order submission failed');
       }
@@ -286,6 +417,9 @@ export default function App() {
       setConfirmedOrderId('ORD-' + Math.floor(100000 + Math.random() * 900000));
       setOrderSubmitted(true);
       confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+      if (customerInfo.notes && customerInfo.notes.trim() !== '') {
+        unlockAchievement('generous-tipper');
+      }
     }
   };
 
@@ -349,7 +483,19 @@ export default function App() {
           </ul>
 
           <div className="nav-actions">
-            <button className="cart-btn" onClick={() => setIsAdminOpen(true)} title="Database Admin Panel" style={{ background: '#e0f2fe', color: '#0369a1', borderColor: 'rgba(2,132,199,0.3)' }}>
+            <button 
+              className="cart-btn" 
+              onClick={() => setIsAchievementsOpen(true)} 
+              title="Bakery Achievements" 
+              style={{ background: '#fef3c7', color: '#d97706', borderColor: 'rgba(217,119,6,0.3)', marginRight: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.25rem', width: 'auto', padding: '0 0.75rem' }}
+            >
+              <Trophy size={20} />
+              <span style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>{unlockedAchievements.length}</span>
+            </button>
+            <button className="cart-btn" onClick={() => {
+              setIsAdminOpen(true);
+              unlockAchievement('bakery-auditor');
+            }} title="Database Admin Panel" style={{ background: '#e0f2fe', color: '#0369a1', borderColor: 'rgba(2,132,199,0.3)' }}>
               <Database size={20} />
             </button>
             <button className="cart-btn" onClick={() => setIsCartOpen(true)} title="View Cart">
@@ -1046,6 +1192,142 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* ACHIEVEMENTS MODAL */}
+      {isAchievementsOpen && (
+        <div className="modal-overlay" onClick={() => setIsAchievementsOpen(false)}>
+          <div className="modal-content" style={{ maxWidth: '650px', background: '#fffbeb', border: '2px solid #fbbf24', position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal-btn" onClick={() => setIsAchievementsOpen(false)}>
+              <X size={24} />
+            </button>
+            
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <div style={{ background: '#fef3c7', display: 'inline-flex', padding: '1rem', borderRadius: '50%', color: '#d97706', marginBottom: '0.75rem', boxShadow: '0 4px 6px -1px rgba(217,119,6,0.2)' }}>
+                <Trophy size={48} />
+              </div>
+              <h2 style={{ fontFamily: '"Playfair Display", serif', color: '#78350f', fontSize: '2rem', margin: '0' }}>L'Étoile Achievements</h2>
+              <p style={{ color: '#b45309', fontSize: '0.95rem', marginTop: '0.25rem' }}>
+                Unlock special culinary milestones as you browse our premium bakery!
+              </p>
+              <div style={{ background: '#f59e0b', color: '#fff', padding: '0.25rem 0.75rem', borderRadius: '9999px', display: 'inline-block', fontSize: '0.85rem', fontWeight: '600', marginTop: '0.5rem' }}>
+                {unlockedAchievements.length} of {BAKERY_ACHIEVEMENTS.length} Unlocked
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+              {BAKERY_ACHIEVEMENTS.map(ach => {
+                const isUnlocked = unlockedAchievements.includes(ach.id);
+                return (
+                  <div 
+                    key={ach.id} 
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem',
+                      padding: '1rem',
+                      borderRadius: '12px',
+                      background: isUnlocked ? '#fff' : '#f5f5f4',
+                      border: isUnlocked ? '1px solid #fcd34d' : '1px solid #e7e5e4',
+                      boxShadow: isUnlocked ? '0 4px 6px -1px rgba(0,0,0,0.05)' : 'none',
+                      opacity: isUnlocked ? 1 : 0.6,
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <div style={{
+                      fontSize: '2rem',
+                      background: isUnlocked ? '#fef3c7' : '#e7e5e4',
+                      width: '60px',
+                      height: '60px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '50%',
+                      flexShrink: 0
+                    }}>
+                      {isUnlocked ? ach.icon : '❓'}
+                    </div>
+                    <div style={{ flexGrow: 1, textAlign: 'left' }}>
+                      <h4 style={{ margin: '0 0 0.25rem 0', color: isUnlocked ? '#78350f' : '#57534e', fontSize: '1.1rem', fontWeight: '600' }}>
+                        {isUnlocked ? ach.title : 'Locked Milestone'}
+                      </h4>
+                      <p style={{ margin: 0, color: isUnlocked ? '#92400e' : '#78716c', fontSize: '0.85rem' }}>
+                        {isUnlocked ? ach.description : 'Keep exploring the bakery site to reveal and unlock this achievement!'}
+                      </p>
+                    </div>
+                    {isUnlocked && (
+                      <div style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.85rem', fontWeight: 'bold', flexShrink: 0 }}>
+                        <CheckCircle size={18} />
+                        <span>Done</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            
+            <div style={{ marginTop: '1.5rem', textAlign: 'center', borderTop: '1px solid #fde68a', paddingTop: '1rem' }}>
+              <button 
+                onClick={() => {
+                  if (confirm('Are you sure you want to reset your achievements?')) {
+                    setUnlockedAchievements([]);
+                    localStorage.removeItem('bakery_achievements');
+                  }
+                }}
+                style={{ background: 'none', border: 'none', color: '#b45309', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline' }}
+              >
+                Reset Progress
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification for Achievements */}
+      {showToast && lastUnlocked && (
+        <div style={{
+          position: 'fixed',
+          bottom: '2rem',
+          right: '2rem',
+          zIndex: 9999,
+          background: 'linear-gradient(135deg, #78350f 0%, #451a03 100%)',
+          color: '#fef3c7',
+          padding: '1.25rem',
+          borderRadius: '16px',
+          boxShadow: '0 10px 15px -3px rgba(0,0,0,0.3), 0 4px 6px -4px rgba(0,0,0,0.3)',
+          border: '2px solid #f59e0b',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          maxWidth: '350px',
+          animation: 'slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}>
+          <div style={{
+            fontSize: '2.5rem',
+            background: 'rgba(251,191,36,0.1)',
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '1px solid rgba(251,191,36,0.3)',
+            flexShrink: 0
+          }}>
+            {lastUnlocked.icon}
+          </div>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ color: '#fbbf24', fontSize: '0.75rem', fontWeight: 'bold', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+              Achievement Unlocked!
+            </div>
+            <h4 style={{ margin: '0 0 0.15rem 0', fontSize: '1.05rem', fontWeight: 'bold', color: '#fff' }}>
+              {lastUnlocked.title}
+            </h4>
+            <p style={{ margin: 0, fontSize: '0.8rem', color: '#fcd34d', opacity: 0.9 }}>
+              {lastUnlocked.description}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
